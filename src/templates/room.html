@@ -5,6 +5,30 @@
     <title>Room page</title>
 </head>
 <body>
-{{ room }}
+<h1>{{ username }} - {{ room }}</h1>
+<form action="" onsubmit="sendMessage(event)">
+    <label for="messageText"></label>
+    <input type="text" id="messageText" autocomplete="off"/>
+    <button>Send</button>
+</form>
+<ul id='messages'>
+</ul>
+<script>
+    let ws = new WebSocket("ws://localhost:8000/ws/chat?room={{ room }}&username={{ username }}");
+    ws.onmessage = function (event) {
+        let messages = document.getElementById('messages')
+        let message = document.createElement('li')
+        let content = document.createTextNode(event.data)
+        message.appendChild(content)
+        messages.appendChild(message)
+    };
+
+    function sendMessage(event) {
+        let input = document.getElementById("messageText")
+        ws.send(input.value)
+        input.value = ''
+        event.preventDefault()
+    }
+</script>
 </body>
 </html>
