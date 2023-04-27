@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
 
@@ -31,13 +33,22 @@ async def ws_room(websocket: WebSocket, room: str, username: str) -> None:
         rooms[room] = ConnectionManager()
     manager = rooms[room]
     await manager.connect(websocket)
-    await manager.broadcast(f'{username} join the chat')
+    await manager.broadcast({
+        'active_connections': len(manager.active_connections),
+        'message': f'{username} join the chat',
+    })
     try:
         while True:
             data = await websocket.receive_text()
-            await manager.broadcast(f'{username} says: {data}')
+            await manager.broadcast({
+                'active_connections': len(manager.active_connections),
+                'message': f'{username} says: {data}',
+            })
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-        await manager.broadcast(f'{username} left the chat')
+        await manager.broadcast({
+            'active_connections': len(manager.active_connections),
+            'message': f'{username} left the chat',
+        })
         if not manager.active_connections:
             del rooms[room]
