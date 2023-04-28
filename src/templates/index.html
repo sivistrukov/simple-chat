@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Index page</title>
-</head>
-<body>
-    <form method="get" action="/chat">
-        <label for="room">Room:</label>
-        <input id="room" name="room">
-        <label for="username">Username:</label>
-        <input id="username" name="username">
-        <input type="submit">
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <form method="get" action="/chat"
+              style="display: flex; gap: 8px; flex-direction: column">
+            <label for="room">Room:</label>
+            <input id="room" name="room" autocomplete="off">
+            <label for="username">Username:</label>
+            <input id="username" name="username" autocomplete="off">
+            <input type="submit" value="Join">
+        </form>
+    </div>
+{% endblock %}

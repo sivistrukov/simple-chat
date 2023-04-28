@@ -1,5 +1,3 @@
-import json
-
 from fastapi import APIRouter, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
 

@@ -1,41 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Room page</title>
-</head>
-<body>
-<h1>Username: {{ username }} - Room: {{ room }}</h1>
-<h3>
-    Active connections: <span id="active_connections"></span>
-</h3>
-<form action="" onsubmit="sendMessage(event)">
-    <label for="messageText"></label>
-    <input type="text" id="messageText" autocomplete="off"/>
-    <button>Send</button>
-</form>
-<ul id='messages'>
-</ul>
-<script>
-    let ws = new WebSocket("ws://localhost:8000/ws/chat?room={{ room }}&username={{ username }}");
-    ws.onmessage = function (event) {
-        let data = JSON.parse(event.data)
-        console.log(typeof (data))
-        let active_connections = document.getElementById('active_connections')
-        active_connections.innerHTML = data['active_connections']
-        let messages = document.getElementById('messages')
-        let message = document.createElement('li')
-        let content = document.createTextNode(data['message'])
-        message.appendChild(content)
-        messages.appendChild(message)
-    };
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container" style="height: 50%">
+        <h1 style="text-align: center">{{ room }}</h1>
+        <div style="display: flex; flex-direction: row; justify-content: space-between">
+            <p>
+                Active connections: <span id="active_connections"></span>
+            </p>
+            <a href="/">left chat</a>
+        </div>
+        <div id='messages' style="height: 100%">
+        </div>
+        <form action="" onsubmit="sendMessage(event)"
+              style="display: flex; flex-direction: row; justify-content: space-between">
+            <div style="display: flex; width: 84%">
+                <label for="messageText"></label>
+                <input type="text" id="messageText" autocomplete="off" style="width: 100%"/>
+            </div>
+            <input type="submit" value="Send" style="width: 14%">
+        </form>
+    </div>
+    <script>
+        let ws = new WebSocket("ws://localhost:8000/ws/chat?room={{ room }}&username={{ username }}");
+        ws.onmessage = function (event) {
+            let data = JSON.parse(event.data)
+            console.log(typeof (data))
+            let active_connections = document.getElementById('active_connections')
+            active_connections.innerHTML = data['active_connections']
+            let messages = document.getElementById('messages')
+            let message = document.createElement('p')
+            let content = document.createTextNode(data['message'])
+            message.appendChild(content)
+            messages.appendChild(message)
+            messages.scrollTop = messages.scrollHeight
+        };
 
-    function sendMessage(event) {
-        let input = document.getElementById("messageText")
-        ws.send(input.value)
-        input.value = ''
-        event.preventDefault()
-    }
-</script>
-</body>
-</html>
+        function sendMessage(event) {
+            let input = document.getElementById("messageText")
+            ws.send(input.value)
+            input.value = ''
+            event.preventDefault()
+        }
+    </script>
+{% endblock %}
